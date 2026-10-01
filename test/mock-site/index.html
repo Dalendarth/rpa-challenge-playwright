@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!-- Offline copy of the rpachallenge.com behavior, used only for automated tests:
+     download link, Start button, fields that change position every round, final score. -->
+<html><head><meta charset="utf-8"><title>Mock RPA Challenge</title></head>
+<body>
+  <a href="./challenge.xlsx" download>Download Excel</a>
+  <button id="start">Start</button>
+  <form id="form"><div id="fields"></div><input type="submit" value="Submit"></form>
+  <div class="message2" style="display:none"></div>
+<script>
+  const FIELDS = [
+    ['First Name','labelFirstName','firstName'], ['Last Name','labelLastName','lastName'],
+    ['Company Name','labelCompanyName','companyName'], ['Role in Company','labelRole','role'],
+    ['Address','labelAddress','address'], ['Email','labelEmail','email'], ['Phone Number','labelPhone','phone']];
+  let data = [], round = -1, correct = 0, t0 = 0;
+  const shuffle = (a) => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]);
+  function render() {
+    document.getElementById('fields').innerHTML = shuffle(FIELDS).map(([label, name]) =>
+      `<div><rpa1-field><div><label>${label}</label><input ng-reflect-name="${name}"></div></rpa1-field></div>`).join('');
+  }
+  document.getElementById('start').onclick = async () => {
+    data = await (await fetch('./data.json')).json();
+    round = 0; correct = 0; t0 = performance.now(); render();
+  };
+  document.getElementById('form').onsubmit = (e) => {
+    e.preventDefault();
+    if (round < 0) return;
+    for (const [, name, key] of FIELDS) {
+      if (document.querySelector(`input[ng-reflect-name="${name}"]`).value === data[round][key]) correct++;
+    }
+    round++;
+    if (round < data.length) return render();
+    const total = data.length * FIELDS.length, ms = Math.round(performance.now() - t0);
+    const msg = document.querySelector('.message2');
+    msg.textContent = `Congratulations! Your success rate is ${Math.round(correct / total * 100)}% ( ${correct} out of ${total} fields) in ${ms} milliseconds`;
+    msg.style.display = 'block';
+    document.getElementById('form').style.display = 'none';
+  };
+</script></body></html>

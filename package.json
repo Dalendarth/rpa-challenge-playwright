@@ -1,0 +1,19 @@
+{
+  "name": "rpa-challenge-playwright",
+  "version": "1.0.0",
+  "description": "RPA bot that solves rpachallenge.com: reads an Excel file and fills a dynamic web form using Playwright and Node.js.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "start:headed": "node src/index.js --headed",
+    "test": "node --test",
+    "setup": "npm install && npx playwright install chromium"
+  },
+  "keywords": ["rpa", "automation", "playwright", "excel", "nodejs", "rpa-challenge"],
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "exceljs": "4.4.0",
+    "playwright": "1.63.0"
+  }
+}
